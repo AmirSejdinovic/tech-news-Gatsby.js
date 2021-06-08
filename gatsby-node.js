@@ -12,3 +12,45 @@ const posts = res.data
    context: {posts}
  })
 }
+
+exports.createSchemaCustomization = ({actions}) =>{
+   const {createTypes} = actions
+   const typeDefs = `
+   
+
+    type PostJson{
+      id: ID
+      title: String
+      body: String
+      
+      
+    }
+   `
+
+   createTypes(typeDefs)
+}
+
+
+exports.createResolvers=({createResolvers})=>{
+    const resolvers ={
+      Query: {
+        allPost:{
+          type: ["PostJson"],
+          args: {
+            filter: "String",
+            limit: "Int"
+          },
+          async resolve(){
+           
+           const res = await axios.get("https://jsonplaceholder.typicode.com/posts")
+           const posts = res.data
+           
+          return posts;
+          
+          }
+        }
+      }
+     
+    }
+    createResolvers(resolvers);
+}
