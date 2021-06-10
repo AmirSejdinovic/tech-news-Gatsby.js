@@ -13,44 +13,31 @@ const posts = res.data
  })
 }
 
-exports.createSchemaCustomization = ({actions}) =>{
-   const {createTypes} = actions
-   const typeDefs = `
-   
+exports.sourceNodes = async ({actions, createNodeId, createContentDigest})  =>{
+  const res = await axios.get("https://jsonplaceholder.typicode.com/posts")
+  const posts = res.data
 
-    type PostJson{
-      id: ID
-      title: String
-      body: String
-      
-      
-    }
-   `
-
-   createTypes(typeDefs)
-}
-
-
-exports.createResolvers=({createResolvers})=>{
-    const resolvers ={
-      Query: {
-        allPost:{
-          type: ["PostJson"],
-          args: {
-            filter: "String",
-            limit: "Int"
-          },
-          async resolve(){
-           
-           const res = await axios.get("https://jsonplaceholder.typicode.com/posts")
-           const posts = res.data
-           
-          return posts;
-          
-          }
-        }
-      }
-     
-    }
-    createResolvers(resolvers);
+   posts.forEach(post=>{
+     const node = {
+       title: post.title,
+       body: post.body,
+       //The node ID must be globally unique
+       id: createNodeId(`Post-${post.id}`),
+       //ID to the parent Node
+       parent: null,
+       //ID of chidlern Nodes
+       children: [],
+       //Internal fields are not usualy interesting for consumers
+      //but are very important for Gatsby core
+       internal: {
+         //globally unique node type
+          type: "Post",
+          //"Hash" or short digital summary of this node
+          contentDigest: createContentDigest(post),
+          //Content exposing raw content of this node
+          content: JSON.stringify(post)      
+       }
+     }
+     actions.createNode(node);
+   })
 }
