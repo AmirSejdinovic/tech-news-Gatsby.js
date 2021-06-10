@@ -1,9 +1,9 @@
-/*import React from 'react'
+import React from 'react'
 import Layout from '../components/Layout'
 import {Link, graphql} from 'gatsby';
 
 export default function TestingPage({data}){
-  const posts = data.allPost;
+  const posts = data.allPost.nodes;
   return(
     <Layout>
       <h1>I am posts page</h1>
@@ -24,10 +24,13 @@ export default function TestingPage({data}){
 export const query = graphql`
    query AllPost {
     allPost{
-      body
-      id
-      title
+      nodes{
+        body
+        id
+        title
+      }
+     
     }
    }
-`;*/
+`;
 
